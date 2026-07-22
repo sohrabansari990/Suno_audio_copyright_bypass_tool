@@ -1,0 +1,7 @@
+{
+  "name": "Aura Audio",
+  "description": "A browser-first, private audio editing suite for playback speed, pitch, gain, and high-frequency reduction.",
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
