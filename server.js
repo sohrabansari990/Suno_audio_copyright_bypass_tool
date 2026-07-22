@@ -118,9 +118,10 @@ async function startServer() {
     }
 
     // Always append a tiny, completely inaudible white noise floor (-90dB) at the very end of the filter chain.
-    // This acts as a safety dither to prevent libmp3lame psymodel.c:calc_energy assertion crash
-    // due to floating-point underflow/silence at low sample rates and extremely quiet volumes (e.g. -40dB to -60dB).
-    filters.push("aeval=exprs='val(ch)+0.00003*(random(ch)-0.5)'")
+    // Also sanitizes any potential NaN or Infinity sample values produced by earlier floating-point-heavy filters
+    // (such as vibrato, aphaser, atempo) to 0 before applying dither. This acts as a robust fail-safe preventing
+    // libmp3lame psymodel.c:calc_energy assertion crash.
+    filters.push("aeval=exprs='if(isnan(val(ch))+isinf(val(ch)),0,val(ch))+0.00003*(random(0)-0.5)'")
 
     const id      = randomBytes(8).toString('hex')
     const ext     = extname(req.file.originalname) || '.mp3'
