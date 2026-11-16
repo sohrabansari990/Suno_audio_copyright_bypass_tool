@@ -143,6 +143,7 @@ async function startServer() {
       args.push(
         '-af', filters.join(','),
         '-c:a', 'libmp3lame',
+        '-abr', '1',
         '-b:a', outputBitrate,
         '-ar', outputSampleRate,
         outPath,
@@ -174,14 +175,17 @@ async function startServer() {
   // Vite middleware setup
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: false,
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
     const distPath = join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.get('*all', (req, res) => {
       res.sendFile(join(distPath, 'index.html'));
     });
   }
